@@ -3,6 +3,7 @@ package com.ironqueue.core;
 import com.ironqueue.job.Job;
 import com.ironqueue.job.JobType;
 import com.ironqueue.storage.JsonSerializer;
+import com.ironqueue.storage.RedisStorage;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,24 +18,11 @@ public class SerializationTest {
 
             // Create job
             Job job = new Job(JobType.EMAIL, payload);
-
-            // Create serializer
-            JsonSerializer serializer = new JsonSerializer();
-
-            // Serialize
-            String json = serializer.serialize(job);
-
-            System.out.println("===== ORIGINAL JOB =====");
-            System.out.println(job);
-
-            System.out.println("\n===== JSON =====");
-            System.out.println(json);
-
-            // Deserialize
-            Job restoredJob = serializer.deserialize(json);
-
-            System.out.println("\n===== RESTORED JOB =====");
-            System.out.println(restoredJob);
+            RedisStorage storage = new RedisStorage();
+            // Save job
+            storage.saveJob(job);
+            System.out.println("\n===== SAVED JOBS =====");
+            System.out.println(storage.getJob(job.getId()));
 
         } catch (Exception e) {
             e.printStackTrace();
