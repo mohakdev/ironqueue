@@ -14,7 +14,7 @@ public class Producer {
         this.queue = new QueueService();
     }
 
-    public void submit(Job job) {
+    public void submit(Job job) throws Exception {
         storage.saveJob(job);
         queue.enqueue(job.getId());
     }

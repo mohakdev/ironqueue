@@ -9,7 +9,7 @@ public class QueueService {
         this.jedis = new UnifiedJedis("redis://localhost:6379");
     };
     public void enqueue(UUID jobId) {
-        jedis.lpush("jobs",jobId);
+        jedis.lpush("jobs",jobId.toString());
     }
     public UUID dequeue() {
         String id = jedis.rpop("jobs");
