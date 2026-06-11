@@ -11,17 +11,20 @@ import com.ironqueue.util.Logger;
 import java.util.UUID;
 
 public class Worker {
+    private final WorkerInfo metadata;
     private final UnifiedJedis jedis;
     private final QueueService queue;
     private final RedisStorage storage;
 
     public Worker() {
+        metadata = new WorkerInfo();
         this.jedis = new UnifiedJedis("redis://localhost:6379");
         this.queue = new QueueService(jedis);
         this.storage = new RedisStorage(jedis);
     }
     public void start() throws Exception {
-        Logger.Log(getClass(), "Started");
+        Logger.Log(getClass(), metadata.getWorkerId() + " Started");
+        storage.saveWorker(metadata);
         while(true) {
             processNextJob();
         }

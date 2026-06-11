@@ -1,6 +1,5 @@
 package com.ironqueue.storage;
 
-import com.ironqueue.job.Job;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -10,10 +9,10 @@ public class JsonSerializer {
         this.mapper = new ObjectMapper();
         this.mapper.findAndRegisterModules();
     }
-    public String serialize(Job job) throws JsonProcessingException {
-        return mapper.writeValueAsString(job);
+    public String serialize(Object obj) throws JsonProcessingException {
+        return mapper.writeValueAsString(obj);
     }
-    public Job deserialize(String json) throws JsonProcessingException {
-        return mapper.readValue(json, Job.class);
+    public <T> T deserialize(String json, Class<T> caller) throws JsonProcessingException {
+        return mapper.readValue(json, caller);
     }
 }
