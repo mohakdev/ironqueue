@@ -6,7 +6,6 @@ import com.ironqueue.storage.RedisStorage;
 import com.ironqueue.executor.JobExecutor;
 import com.ironqueue.executor.JobExecutorFactory;
 import com.ironqueue.job.Job;
-import com.ironqueue.job.JobStatus;
 import com.ironqueue.util.Logger;
 import java.util.UUID;
 
@@ -23,7 +22,7 @@ public class Worker {
         this.storage = new RedisStorage(jedis);
     }
     public void start() throws Exception {
-        Logger.Log(getClass(), metadata.getWorkerId() + " Started");
+        Logger.Log(getClass(), "worker:"+metadata.getWorkerId() + " Started");
         storage.saveWorker(metadata);
         startHeartbeat();
         while(true) {
@@ -35,23 +34,33 @@ public class Worker {
         UUID jobId = queue.blockingDequeue();
         if(jobId == null) {System.out.println("No Jobs Found"); return;}
         Job job = storage.getJob(jobId);
+        job.incrementAttempts();
+        storage.saveJob(job);
         try {
-            job.setStatus(JobStatus.PROCESSING);
+            job.markProcessing();
             storage.saveJob(job);
-            Logger.Log(getClass(), "is processing job:" + jobId);
+            Logger.Log(getClass(), "worker:"+ metadata.getWorkerId()+" is processing job:" + jobId);
             //Factory Pattern to execute jobs
             JobExecutor executor = JobExecutorFactory.getExecutor(job.getType());
             executor.execute(job);
             //Work Completed
-            job.setStatus(JobStatus.COMPLETED);
+            job.markCompleted();
             storage.saveJob(job);
-            Logger.Log(getClass(), "completed job:" + jobId);
+            Logger.Log(getClass(), "worker:"+ metadata.getWorkerId()+" completed job:" + jobId);
         }
         catch (Exception e){
-            job.setStatus(JobStatus.FAILED);
-            storage.saveJob(job);
-            Logger.Log(getClass(), "failed job:" + jobId);
-            System.out.println(e);
+            if(job.canRetry()) {
+                // Put back into queue
+                job.markPending();
+                storage.saveJob(job);
+                queue.enqueue(job.getId());
+            } else {
+                // Permanently failed
+                job.markFailed();
+                storage.saveJob(job);
+                Logger.Log(getClass(), "worker:"+ metadata.getWorkerId()+" failed job:" + jobId);
+                System.out.println(e);
+            }
         }
     }
 
