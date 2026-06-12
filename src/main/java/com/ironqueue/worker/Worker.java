@@ -14,9 +14,10 @@ public class Worker {
     private final UnifiedJedis jedis;
     private final QueueService queue;
     private final RedisStorage storage;
+    private volatile boolean isRunning = true;
 
     public Worker() {
-        metadata = new WorkerInfo();
+        this.metadata = new WorkerInfo();
         this.jedis = new UnifiedJedis("redis://localhost:6379");
         this.queue = new QueueService(jedis);
         this.storage = new RedisStorage(jedis);
@@ -25,14 +26,16 @@ public class Worker {
         Logger.Log(getClass(), "worker:"+metadata.getWorkerId() + " Started");
         storage.saveWorker(metadata);
         startHeartbeat();
-        while(true) {
-            processNextJob();
+
+        while(isRunning) {
+            //Retrieving job from queue
+            UUID jobId = queue.blockingDequeue(5);
+            if(jobId == null) {System.out.println("No Jobs Found"); return;}
+            processJob(jobId);
         }
     }
 
-    public void processNextJob() throws Exception {
-        UUID jobId = queue.blockingDequeue();
-        if(jobId == null) {System.out.println("No Jobs Found"); return;}
+    public void processJob(UUID jobId) throws Exception {
         Job job = storage.getJob(jobId);
         job.incrementAttempts();
         storage.saveJob(job);
@@ -73,12 +76,17 @@ public class Worker {
                     Logger.Log(getClass(),"Heartbeat sent by Worker:"+metadata.getWorkerId());
                     Thread.sleep(5000);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    Logger.Log(getClass(), "Stopping Heartbeats of Worker:"+metadata.getWorkerId());
+                    return;
                 }
             }
         });
 
         heartbeatThread.setDaemon(true);
         heartbeatThread.start();
+    }
+    public void shutdown(){
+        Logger.Log(getClass(),"worker:" + metadata.getWorkerId() + " shutting down...");
+        isRunning = false;
     }
 }

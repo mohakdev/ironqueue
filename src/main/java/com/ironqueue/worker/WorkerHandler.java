@@ -7,6 +7,9 @@ public class WorkerHandler {
     public static void main(String[] args) {
 
         Worker worker = new Worker();
+        Runtime.getRuntime().addShutdownHook(
+            new Thread(() -> worker.shutdown())
+        );
         try {
             worker.start();
         }

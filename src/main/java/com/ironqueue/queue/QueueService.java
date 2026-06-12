@@ -22,9 +22,10 @@ public class QueueService {
         Logger.Log(getClass(), "Returning job:" + id + " from queue");
         return UUID.fromString(id);
     }
-    public UUID blockingDequeue() {
+    public UUID blockingDequeue(int time) {
         // Wait forever until a job arrives
-        java.util.List<String> result = jedis.brpop(0, "jobs");
+        java.util.List<String> result = jedis.brpop(time, "jobs");
+        if(result == null) {return null;}
         String id = result.get(1);
         Logger.Log(getClass(), "Returning job:" + id + " from queue");
         return UUID.fromString(id);
