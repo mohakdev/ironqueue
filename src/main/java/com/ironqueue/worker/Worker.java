@@ -25,6 +25,7 @@ public class Worker {
     public void start() throws Exception {
         Logger.Log(getClass(), metadata.getWorkerId() + " Started");
         storage.saveWorker(metadata);
+        startHeartbeat();
         while(true) {
             processNextJob();
         }
@@ -52,5 +53,23 @@ public class Worker {
             Logger.Log(getClass(), "failed job:" + jobId);
             System.out.println(e);
         }
+    }
+
+    public void startHeartbeat() {
+        Thread heartbeatThread = new Thread(() -> {
+            while (true) {
+                try {
+                    metadata.heartbeat();
+                    storage.saveWorker(metadata);
+                    Logger.Log(getClass(),"Heartbeat sent by Worker:"+metadata.getWorkerId());
+                    Thread.sleep(5000);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        heartbeatThread.setDaemon(true);
+        heartbeatThread.start();
     }
 }
