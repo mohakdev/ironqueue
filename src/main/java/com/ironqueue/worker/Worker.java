@@ -22,6 +22,8 @@ public class Worker {
         this.queue = new QueueService(jedis);
         this.storage = new RedisStorage(jedis);
     }
+    public UUID getWorkerId() {return metadata.getWorkerId();}
+
     public void start() throws Exception {
         Logger.Log(getClass(), "worker:"+metadata.getWorkerId() + " Started");
         storage.saveWorker(metadata);

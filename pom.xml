@@ -10,6 +10,32 @@
   <properties>
     <maven.compiler.release>11</maven.compiler.release>
   </properties>
+  <build>
+    <finalName>ironqueue</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.6.2</version> <!-- Use the latest stable version available -->
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <transformers>
+                                <!-- Sets the Main-Class in the MANIFEST.MF file to make the JAR executable -->
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>com.ironqueue.core.IronqueueCLI</mainClass>
+                                </transformer>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
   <dependencies>
     <!-- Source: https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
     <dependency>
@@ -17,6 +43,11 @@
         <artifactId>jackson-databind</artifactId>
         <version>2.22.0</version>
         <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.github.cdimascio</groupId>
+      <artifactId>dotenv-java</artifactId>
+      <version>3.0.0</version>
     </dependency>
     <dependency>
         <groupId>com.fasterxml.jackson.datatype</groupId>
@@ -33,6 +64,11 @@
       <artifactId>junit</artifactId>
       <version>3.8.1</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.resend</groupId>
+      <artifactId>resend-java</artifactId>
+      <version>4.12.0</version>
     </dependency>
   </dependencies>
 </project>
