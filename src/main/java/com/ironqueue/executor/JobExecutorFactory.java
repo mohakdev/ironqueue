@@ -9,7 +9,8 @@ public class JobExecutorFactory {
         switch(type) {
             case EMAIL:
                 return new EmailJobExecutor();
-
+            case QUOTE:
+                return new QuoteJobExecutor();
             default:
                 throw new IllegalArgumentException(
                     "Unknown job type: " + type

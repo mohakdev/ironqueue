@@ -7,7 +7,7 @@ import com.ironqueue.core.CommandHandler;
 import com.ironqueue.worker.Worker;
 
 public class Logger {
-    public static boolean printLogs = true;
+    public static boolean printLogs = false;
     public static void Log(Class<?> caller,String msg) {
         if(!printLogs) {return;}
         if(caller == null) {
@@ -16,6 +16,9 @@ public class Logger {
         else {
             System.out.println("<" + caller.getSimpleName() + "> " + msg);
         }
+    }
+    public static void LogWelcome() {
+        System.out.println("--------WELCOME TO IRONQUEUE--------");
     }
     public static void LogHelp() {
         System.out.println("--------IRONQUEUE HELP--------");

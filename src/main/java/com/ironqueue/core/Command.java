@@ -17,5 +17,5 @@ public abstract class Command {
         return description;
     }
 
-    public abstract void execute(String[] args);
+    public abstract void execute(String[] args) throws Exception;
 }
