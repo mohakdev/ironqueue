@@ -1,26 +1,34 @@
 package com.ironqueue.core;
 
 import java.util.Scanner;
+
+import org.jline.reader.LineReader;
+
 import com.ironqueue.util.Logger;
 
 public class IronqueueCLI {
     public static boolean keepRunning = true;
     public static void main(String[] args) {
         CommandHandler.initializeCommands();
-        Logger.LogWelcome();
-        Scanner sc = new Scanner(System.in);
+
+        try { 
+            Logger.InitializeLogger(); 
+        }
+        catch(Exception e){
+            Logger.LogError(e.toString());
+        }
+
+        System.out.println("--------WELCOME TO IRONQUEUE--------");
         while(keepRunning) {
-            System.out.print("IRONQUEUE > ");
-            String inputLine = sc.nextLine();
+            String inputLine = Logger.reader.readLine("IRONQUEUE > ");
             String[] params = inputLine.split("\\s+");
             try {
                 Command commandToRun = CommandHandler.getCommandByName(params[0]);
                 commandToRun.execute(params);
             }
             catch (Exception e) {
-                Logger.Log(null, "Unable to run the desired command");
+                Logger.LogError("Unable to run the desired command");
             }
         }
-        sc.close();
     }
 }

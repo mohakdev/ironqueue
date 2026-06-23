@@ -19,7 +19,7 @@ public class CommandHandler {
 
     public static void initializeCommands() {
         if(!allCommands.isEmpty()) {return;}
-        Command createJob = new Command("create-job","Create a job") {
+        Command createJob = new Command("job-create","Create a job") {
             @Override
             public void execute(String[] args) throws Exception {
                 Map<String,Object> payload = new HashMap<String,Object>();
@@ -33,7 +33,20 @@ public class CommandHandler {
                 producer.submit(jobToExecute);
             }
         };
-        Command worker = new Command("worker","Start Worker") {
+        //TODO: Complete these 2 commands
+        // Command viewJob = new Command("job-info","Info about a particular job") {
+        //     @Override
+        //     public void execute(String[] args) throws Exception {
+                
+        //     }
+        // };
+        // Command viewAllJobs = new Command("jobs","Lists all jobs in database") {
+        //     @Override
+        //     public void execute(String[] args) throws Exception {
+                
+        //     }
+        // };
+        Command worker = new Command("worker-start","Start Worker") {
             @Override
             public void execute(String[] args) {
                 WorkerHandler.createWorker();
@@ -51,6 +64,20 @@ public class CommandHandler {
                 Logger.LogHelp();
             }
         };
+        Command logs = new Command("logs","Can be turned on or off to see background logs. \nuse `logs on` to turn on logs and `logs off` to turn them off.") {
+            @Override
+            public void execute(String[] args) {
+                if(args[1].equals("on")) {
+                    Logger.printLogs = true;
+                }
+                else if (args[1].equals("off")) {
+                    Logger.printLogs = false;
+                }
+                else {
+                    Logger.LogError("Invalid Parameter passed in a command.");
+                }
+            }
+        };
         Command exit = new Command("exit","Exit the program") {
             @Override
             public void execute(String[] args) {
@@ -61,6 +88,7 @@ public class CommandHandler {
         allCommands.add(worker);
         allCommands.add(listWorker);
         allCommands.add(help);
+        allCommands.add(logs);
         allCommands.add(exit);
     }
 

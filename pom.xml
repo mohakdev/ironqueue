@@ -45,9 +45,9 @@
         <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>io.github.cdimascio</groupId>
-      <artifactId>dotenv-java</artifactId>
-      <version>3.0.0</version>
+        <groupId>org.jline</groupId>
+        <artifactId>jline</artifactId>
+        <version>3.30.4</version>
     </dependency>
     <dependency>
         <groupId>com.fasterxml.jackson.datatype</groupId>

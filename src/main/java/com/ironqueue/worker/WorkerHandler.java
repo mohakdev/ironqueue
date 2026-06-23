@@ -1,7 +1,6 @@
 package com.ironqueue.worker;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import com.ironqueue.util.Logger;
@@ -18,7 +17,7 @@ public class WorkerHandler {
             worker.start();
         }
         catch (Exception e) {
-            Logger.Log(null, "Unable to start worker");
+            Logger.LogError("Unable to start worker");
             return;
         }
         workers.add(worker);

@@ -5,7 +5,6 @@ import com.resend.*;
 import com.resend.core.exception.ResendException;
 import com.resend.services.emails.model.CreateEmailOptions;
 import com.resend.services.emails.model.CreateEmailResponse;
-import io.github.cdimascio.dotenv.Dotenv;
 import com.ironqueue.job.Job;
 import com.ironqueue.util.Logger;
 
@@ -13,7 +12,6 @@ public class EmailJobExecutor implements JobExecutor {
 
     @Override
     public void execute(Job job) throws Exception {
-        Dotenv dotenv = Dotenv.load();
         Map<String,Object> payload = job.getPayload();
         String reciever = (String)payload.get("to");
         String body =  (String)payload.get("body");
@@ -21,10 +19,17 @@ public class EmailJobExecutor implements JobExecutor {
 
         Logger.Log(getClass(),"Sending emails to " + reciever);
         //Actual work should be done here
-        Resend resend = new Resend(dotenv.get("RESEND_API"));
+        String apiKey = System.getenv("RESEND_API_KEY");
+
+        if(apiKey == null || apiKey.isBlank()) {
+            Logger.LogError("RESEND_API_KEY not found. \nPlease set it in the environment variables using \nEXPORT RESEND_API_KEY=key");
+            throw new IllegalStateException("RESEND_API_KEY environment variable not configured");
+        }
+
+        Resend resend = new Resend(apiKey);
 
         CreateEmailOptions params = CreateEmailOptions.builder()
-                .from(dotenv.get("FROM"))
+                .from("mohak@mohakjain.in")
                 .to(reciever)
                 .subject(subject)
                 .html(body)
