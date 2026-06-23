@@ -1,8 +1,5 @@
 package com.ironqueue.core;
 
-import java.util.Scanner;
-
-import org.jline.reader.LineReader;
 
 import com.ironqueue.util.Logger;
 

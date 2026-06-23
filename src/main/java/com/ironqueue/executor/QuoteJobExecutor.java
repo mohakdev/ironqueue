@@ -36,7 +36,7 @@ public class QuoteJobExecutor implements JobExecutor {
             .build();
         HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
         String output = response.body();
-        System.out.println(output);
+        Logger.LogOutput(output);
         Logger.Log(getClass(),"Quote retrieved from API");
     }
 }

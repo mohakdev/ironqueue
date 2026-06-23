@@ -6,6 +6,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ironqueue.util.Logger;
 import com.ironqueue.worker.WorkerInfo;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public class RedisStorage {
@@ -21,6 +24,7 @@ public class RedisStorage {
         UUID jobId = job.getId();
         String json = serializer.serialize(job);
         jedis.set("job:"+jobId, json);
+        jedis.sadd("all_jobs",job.getId().toString());
         Logger.Log(getClass(), "Saving job:"+jobId+" in Redis");
 
     }
@@ -29,6 +33,9 @@ public class RedisStorage {
         if (json == null) {return null;}
         Logger.Log(getClass(), "Retrieving job:"+jobId+" from Redis");
         return serializer.deserialize(json, Job.class);
+    }
+    public Set<String> getAllJobIds() throws JsonProcessingException {
+        return jedis.smembers("all_jobs");
     }
     //Workers
     public void saveWorker(WorkerInfo workerInfo) throws JsonProcessingException
@@ -44,5 +51,8 @@ public class RedisStorage {
         if(json == null) {return null;}
         Logger.Log(getClass(),"Retrieving worker:"+workerId+" from Redis");
         return serializer.deserialize(json,WorkerInfo.class);
+    }
+    public Set<String> getAllWorkerIds() throws JsonProcessingException {
+        return jedis.smembers("workers");
     }
 }

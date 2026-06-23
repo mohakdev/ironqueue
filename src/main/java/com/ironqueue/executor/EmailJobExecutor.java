@@ -36,7 +36,7 @@ public class EmailJobExecutor implements JobExecutor {
                 .build();
          try {
             CreateEmailResponse data = resend.emails().send(params);
-            System.out.println(data.getId());
+            Logger.LogOutput(data.getId());
         } catch (ResendException e) {
             e.printStackTrace();
         }
