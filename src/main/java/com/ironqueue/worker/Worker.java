@@ -31,7 +31,7 @@ public class Worker {
         while(isRunning) {
             //Retrieving job from queue
             UUID jobId = queue.blockingDequeue(5);
-            if(jobId == null) {System.out.println("No Jobs Found"); return;}
+            if(jobId == null) {Logger.Log(getClass(),"No Jobs Found"); continue;}
             processJob(jobId);
         }
     }

@@ -4,6 +4,8 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class WorkerInfo {
 
     private UUID workerId;
@@ -13,6 +15,7 @@ public class WorkerInfo {
         this.workerId = UUID.randomUUID();
         this.lastSeen = Instant.now();
     }
+    @JsonIgnore
     public boolean isAlive() {
         return Duration.between(lastSeen,Instant.now()).getSeconds() < 10;
     }
