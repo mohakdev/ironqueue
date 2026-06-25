@@ -111,6 +111,7 @@ public class CommandHandler {
             @Override
             public void execute(String[] args) {
                 IronqueueCLI.keepRunning = false;
+                WorkerHandler.shutAllWorkers();
             }
         };
 

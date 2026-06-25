@@ -13,16 +13,19 @@ public class WorkerHandler {
         Runtime.getRuntime().addShutdownHook(
             new Thread(() -> worker.shutdown())
         );
-        try {
-            worker.start();
-        }
-        catch (Exception e) {
-            Logger.LogError("Unable to start worker");
-            return;
-        }
+        new Thread(() -> {
+            try {
+                worker.start();
+            } catch (Exception e) {
+                Logger.LogError("Unable to start worker");
+                return;
+            }
+        }).start();
         workers.add(worker);
     }
-    public static List<Worker> listWorkers() {
-        return workers;
+    public static void shutAllWorkers() {
+        for(Worker worker : workers) {
+            worker.shutdown();
+        }
     }
 }
