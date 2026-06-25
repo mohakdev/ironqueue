@@ -89,7 +89,7 @@ java -jar target/ironqueue.jar
 ## Create a Job
 
 ```text
-job-create EMAIL recipient@example.com "Subject" "Hello from IronQueue"
+job-create EMAIL recipient@example.com Subject Hello_from_IronQueue
 ```
 
 ## List Jobs
