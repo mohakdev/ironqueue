@@ -7,14 +7,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import org.jline.utils.Log;
 
 import com.ironqueue.job.Job;
 import com.ironqueue.job.JobType;
 import com.ironqueue.producer.Producer;
 import com.ironqueue.storage.RedisStorage;
 import com.ironqueue.util.Logger;
-import com.ironqueue.worker.Worker;
 import com.ironqueue.worker.WorkerHandler;
 import com.ironqueue.worker.WorkerInfo;
 
