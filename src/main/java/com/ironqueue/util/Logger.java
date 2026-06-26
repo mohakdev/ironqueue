@@ -51,8 +51,13 @@ public class Logger {
         sb.append("--------JOB DETAIL--------\n");
         sb.append("ID : " + job.getId().toString() + "\n");
         sb.append("TYPE : " + job.getType().toString() + "\n");
+        sb.append("PAYLOAD: " + job.getPayload() + "\n");
         sb.append("STATUS : " + job.getStatus().toString() + "\n");
         sb.append("ATTEMPTS : " + job.getAttempts() + "\n");
+        sb.append("CREATED AT: " + job.getCreatedAt().toString() + "\n");
+        if(job.getAssignedWorkerId() != null) {
+            sb.append("ASSIGNED TO worker:" + job.getAssignedWorkerId() + "\n");
+        }
         reader.printAbove(sb.toString());
     }
     public static void LogJobs(List<Job> jobs) {

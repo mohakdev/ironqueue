@@ -39,6 +39,7 @@ public class Worker {
     public void processJob(UUID jobId) throws Exception {
         Job job = storage.getJob(jobId);
         job.incrementAttempts();
+        job.setAssignedWorkerId(metadata.getWorkerId());
         storage.saveJob(job);
         try {
             job.markProcessing();
