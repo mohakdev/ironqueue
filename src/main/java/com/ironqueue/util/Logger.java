@@ -12,6 +12,7 @@ import org.jline.terminal.TerminalBuilder;
 import com.ironqueue.core.Command;
 import com.ironqueue.core.CommandHandler;
 import com.ironqueue.job.Job;
+import com.ironqueue.job.JobType;
 import com.ironqueue.worker.WorkerInfo;
 
 public class Logger {
@@ -65,6 +66,14 @@ public class Logger {
         }
         reader.printAbove(sb.toString());
         count=0;
+    }
+    public static void LogJobTypes() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("--------AVAILABLE JOB TYPES--------\n");
+        for (JobType type : JobType.values()) {
+            sb.append(type.toString() + "\n");
+        }
+        reader.printAbove(sb.toString());
     }
     public static void LogWorkers(List<WorkerInfo> workers) {
         int counter = 1;

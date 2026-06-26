@@ -4,5 +4,5 @@ public enum JobType {
     DEFAULT,
     QUOTE,
     EMAIL,
-    REPORT
+    UPLOAD,
 }

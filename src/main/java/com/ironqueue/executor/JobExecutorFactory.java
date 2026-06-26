@@ -11,6 +11,8 @@ public class JobExecutorFactory {
                 return new EmailJobExecutor();
             case QUOTE:
                 return new QuoteJobExecutor();
+            case UPLOAD:
+                return new UploadJobExecutor();
             default:
                 throw new IllegalArgumentException(
                     "Unknown job type: " + type

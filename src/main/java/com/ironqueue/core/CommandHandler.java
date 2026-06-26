@@ -51,6 +51,12 @@ public class CommandHandler {
                 Logger.LogOneJob(job);
             }
         };
+        Command viewJobTypes = new Command("Lists all types of jobs you can create") {
+            @Override
+            public void execute(String[] args) throws Exception {
+                Logger.LogJobTypes();
+            }
+        };
         Command viewAllJobs = new Command("Lists all jobs in database") {
             @Override
             public void execute(String[] args) throws Exception {
@@ -116,6 +122,7 @@ public class CommandHandler {
         allCommands.put("job-create",createJob);
         allCommands.put("job-info", viewJob);
         allCommands.put("job-list",viewAllJobs);
+        allCommands.put("job-types",viewJobTypes);
         allCommands.put("worker-start",worker);
         allCommands.put("worker-list",listWorker);
         allCommands.put("logs",logs);
