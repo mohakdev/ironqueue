@@ -57,12 +57,17 @@ public class Logger {
     }
     public static void LogJobs(List<Job> jobs) {
         StringBuilder sb = new StringBuilder();
-        sb.append("--------ALL JOBS--------\n");
-        sb.append("#   ID                                    TYPE      STATUS\n");
         int count = 1;
-        for (Job job : jobs) {
-            sb.append(count +" "+ job.getId() + "    " + job.getType() + "    " + job.getStatus() + "\n");
-            count++;
+        if(jobs.isEmpty()) {
+            sb.append("--------NO JOBS FOUND--------\n");
+        }
+        else {
+            sb.append("--------ALL JOBS--------\n");
+            sb.append("#   ID                                    TYPE      STATUS\n");
+            for (Job job : jobs) {
+                sb.append(count +" "+ job.getId() + "    " + job.getType() + "    " + job.getStatus() + "\n");
+                count++;
+            }
         }
         reader.printAbove(sb.toString());
         count=0;
@@ -78,11 +83,17 @@ public class Logger {
     public static void LogWorkers(List<WorkerInfo> workers) {
         int counter = 1;
         StringBuilder sb = new StringBuilder();
-        sb.append("--------ALL WORKERS--------\n");
-        sb.append("#   ID                                    STATUS\n");
-        for (WorkerInfo worker : workers) {
-            sb.append(counter + " " + worker.getWorkerId() + "    " + (worker.isAlive() ? "ONLINE" : "OFFLINE") + "\n");
-            counter++;
+        if(workers.isEmpty()) {
+            sb.append("--------NO WORKERS FOUND--------");
+        }
+        else {
+            sb.append("--------ALL WORKERS--------\n");
+            sb.append("#   ID                                    STATUS   JOBS COMPLETED\n");
+            for (WorkerInfo worker : workers) {
+                String status = (worker.isAlive() ? "ONLINE " : "OFFLINE");
+                sb.append(counter + " " + worker.getWorkerId() + "    " + status + "       " + worker.getJobsProcessed() + "\n");
+                counter++;
+            }
         }
         reader.printAbove(sb.toString());
         counter=0;
@@ -99,4 +110,5 @@ public class Logger {
     public static void LogError(StackTraceElement[] msg) {
         System.out.println(msg);
     }
+    public static void SimpleLog(String s) {reader.printAbove(s);}
 }

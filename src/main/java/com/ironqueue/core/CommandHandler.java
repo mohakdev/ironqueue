@@ -41,6 +41,7 @@ public class CommandHandler {
                 }
                 Job jobToExecute = new Job(jobType,payload);
                 producer.submit(jobToExecute);
+                Logger.SimpleLog("Job Sucessfully created.\nUUID: "+jobToExecute.getId().toString());
             }
         };
         Command viewJob = new Command("Info about a particular job") {

@@ -50,6 +50,7 @@ public class Worker {
             //Work Completed
             job.markCompleted();
             storage.saveJob(job);
+            metadata.incrementJobProcessed(); //Keep a track of total completed jobs
             Logger.Log(getClass(), "worker:"+ metadata.getWorkerId()+" completed job:" + jobId);
         }
         catch (Exception e){
