@@ -57,15 +57,18 @@ public class Worker {
         catch (Exception e){
             if(job.canRetry()) {
                 // Put back into queue
-                job.markPending();
+                job.markRetrying();
                 storage.saveJob(job);
                 queue.enqueue(job.getId());
             } else {
                 // Permanently failed
                 job.markFailed();
                 storage.saveJob(job);
-                Logger.Log(getClass(), "worker:"+ metadata.getWorkerId()+" failed job:" + jobId);
-                System.out.println(e);
+                
+                queue.enqueueDeadLetter(job.getId()); //Sending job to DLQ
+
+                Logger.LogError(e.toString());
+                Logger.Log(getClass(), "worker:"+ metadata.getWorkerId()+" failed job:" + jobId + " and sent it to DLQ");
             }
         }
     }

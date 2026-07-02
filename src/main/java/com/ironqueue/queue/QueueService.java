@@ -1,6 +1,9 @@
 package com.ironqueue.queue;
 
 import redis.clients.jedis.UnifiedJedis;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import com.ironqueue.util.Logger;
 
@@ -21,6 +24,13 @@ public class QueueService {
         }
         Logger.Log(getClass(), "Returning job:" + id + " from queue");
         return UUID.fromString(id);
+    }
+    public void enqueueDeadLetter(UUID jobId) {
+        jedis.lpush("dead_jobs",jobId.toString());
+        Logger.Log(getClass(), "Job:" + jobId + " was sent to DLQ");
+    }
+    public List<String> getDeadLetterJobs() {
+        return jedis.lrange("dead_jobs", 0, -1);
     }
     public UUID blockingDequeue(int time) {
         // Wait forever until a job arrives

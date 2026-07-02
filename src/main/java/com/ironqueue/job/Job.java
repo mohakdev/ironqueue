@@ -12,7 +12,7 @@ public class Job {
     private Map<String, Object> payload;
     private Instant createdAt;
     private int attempts;
-    private int maxAttempts; 
+    private static final int MAX_ATTEMPTS = 3;
     private UUID assignedWorkerId;
 
 
@@ -23,7 +23,6 @@ public class Job {
         this.status = JobStatus.PENDING;
         this.createdAt = Instant.now();
         this.attempts = 0;
-        this.maxAttempts = 3;
         this.assignedWorkerId = null;
     }
 
@@ -42,6 +41,7 @@ public class Job {
     public void markProcessing() {this.status = JobStatus.PROCESSING;}
     public void markPending() {this.status = JobStatus.PENDING;}
     public void markFailed() {this.status = JobStatus.FAILED;}
+    public void markRetrying() {this.status = JobStatus.RETRYING;}
 
 
     public Map<String, Object> getPayload() {return payload;}
@@ -52,7 +52,7 @@ public class Job {
     
     public int getAttempts() {return attempts;}
     public void incrementAttempts() {attempts++;}
-    public boolean canRetry() {return attempts < maxAttempts;}
+    public boolean canRetry() {return attempts < MAX_ATTEMPTS;}
 
     public UUID getAssignedWorkerId() {return assignedWorkerId;}
     public void setAssignedWorkerId(UUID assignedWorkerId) {this.assignedWorkerId = assignedWorkerId;}

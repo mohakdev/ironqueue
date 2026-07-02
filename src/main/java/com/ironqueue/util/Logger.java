@@ -12,6 +12,7 @@ import org.jline.terminal.TerminalBuilder;
 import com.ironqueue.core.Command;
 import com.ironqueue.core.CommandHandler;
 import com.ironqueue.job.Job;
+import com.ironqueue.job.JobStatus;
 import com.ironqueue.job.JobType;
 import com.ironqueue.worker.WorkerInfo;
 
@@ -67,7 +68,13 @@ public class Logger {
             sb.append("--------NO JOBS FOUND--------\n");
         }
         else {
-            sb.append("--------ALL JOBS--------\n");
+            if(jobs.get(0).getStatus() == JobStatus.FAILED) { 
+                sb.append("--------DEAD JOBS--------\n");
+            } 
+            else { 
+                sb.append("--------ALL JOBS--------\n"); 
+            }
+            
             sb.append("#   ID                                    TYPE      STATUS\n");
             for (Job job : jobs) {
                 sb.append(count +" "+ job.getId() + "    " + job.getType() + "    " + job.getStatus() + "\n");

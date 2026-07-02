@@ -11,6 +11,7 @@ import java.util.UUID;
 import com.ironqueue.job.Job;
 import com.ironqueue.job.JobType;
 import com.ironqueue.producer.Producer;
+import com.ironqueue.queue.QueueService;
 import com.ironqueue.storage.RedisStorage;
 import com.ironqueue.util.Logger;
 import com.ironqueue.worker.WorkerHandler;
@@ -22,11 +23,13 @@ public class CommandHandler {
     public static Map<String,Command> allCommands = new HashMap<>();
     private static UnifiedJedis jedis;
     private static RedisStorage storage;
+    private static QueueService queue;
     static Producer producer = new Producer();
 
     public static void initializeCommands() {
         jedis = new UnifiedJedis("redis://localhost:6379");
         storage = new RedisStorage(jedis);
+        queue = new QueueService(jedis);
         if(!allCommands.isEmpty()) {return;}
 
         //All Commands
@@ -65,6 +68,18 @@ public class CommandHandler {
                 List<Job> allJobs = new ArrayList<>();
 
                 for (String id : allJobId) {
+                    allJobs.add(storage.getJob(UUID.fromString(id)));
+                }
+                Logger.LogJobs(allJobs);
+            }
+        };
+        Command viewDeadJobs = new Command("Lists the Dead Letter Queue") {
+            @Override
+            public void execute(String[] args) throws Exception {
+                List<String> deadJobs = queue.getDeadLetterJobs();
+                List<Job> allJobs = new ArrayList<>();
+
+                for (String id : deadJobs) {
                     allJobs.add(storage.getJob(UUID.fromString(id)));
                 }
                 Logger.LogJobs(allJobs);
@@ -124,6 +139,7 @@ public class CommandHandler {
         allCommands.put("job-info", viewJob);
         allCommands.put("job-list",viewAllJobs);
         allCommands.put("job-types",viewJobTypes);
+        allCommands.put("dead-list",viewDeadJobs);
         allCommands.put("worker-start",worker);
         allCommands.put("worker-list",listWorker);
         allCommands.put("logs",logs);

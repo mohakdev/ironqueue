@@ -12,6 +12,8 @@ import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
+import java.net.http.HttpTimeoutException;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -39,6 +41,7 @@ public class UploadJobExecutor implements JobExecutor{
     public static String uploadFile(String filePathString, String url, String apiKey) throws IOException, InterruptedException {
         Path filePath = Paths.get(filePathString);
         String fileName = filePath.getFileName().toString();
+        if(fileName == null) {throw new IOException("File not found in path");}
         String contentType = Files.probeContentType(filePath);
         if (contentType == null) {
             contentType = "application/octet-stream";
@@ -51,25 +54,32 @@ public class UploadJobExecutor implements JobExecutor{
         byte[] multipartBody = createMultipartBody(filePath, fileName, contentType, boundary);
 
         // 5. Initialize HttpClient and send the POST request
-        HttpClient client = HttpClient.newHttpClient();
+        HttpClient client = HttpClient.newBuilder()
+            .connectTimeout(Duration.ofSeconds(10))
+            .build();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
                 .header("Content-Type", "multipart/form-data; boundary=" + boundary)
                 .header("Api-Key", apiKey)
+                .timeout(Duration.ofSeconds(10)) 
                 .POST(HttpRequest.BodyPublishers.ofByteArray(multipartBody))
                 .build();
-
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode root = mapper.readTree(response.body());
-
-        JsonNode firstFile = root.path("files").path(0);
-        if (firstFile.isMissingNode() || firstFile.isNull()) {
-            Logger.LogError("No response returned from PDFRest");
-            throw new IllegalStateException("No response returned from PDFRest");
+        try {
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+    
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(response.body());
+    
+            JsonNode firstFile = root.path("files").path(0);
+            if (firstFile.isMissingNode() || firstFile.isNull()) {
+                Logger.LogError("No response returned from PDFRest");
+                throw new InterruptedException("No response returned from PDFRest");
+            }
+            return firstFile.path("id").asText();
+        } catch (InterruptedException e) {
+            Logger.LogError("PDFRest upload timed out");
+            throw new InterruptedException("PDFRest upload timed out");
         }
-        return firstFile.path("id").asText();
     }
 
     private static byte[] createMultipartBody(Path filePath, String fileName, String contentType, String boundary) throws IOException {
